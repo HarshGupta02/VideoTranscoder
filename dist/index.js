@@ -51,6 +51,8 @@ function init() {
                             continue;
                         }
                     }
+                    throw new Error("Processing Failed");
+                    // Goes to catch block that puts the message eventually to Dead Letter Queue
                     for (const record of event.Records) {
                         const { s3 } = record;
                         const { bucket, object: { key } } = s3;

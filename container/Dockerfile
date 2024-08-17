@@ -10,6 +10,8 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 
-COPY index.js .
+# COPY index.js .
+COPY index_hls.js .
+RUN mkdir -p Outputs/360p Outputs/480p Outputs/720p
 
 CMD [ "npm", "start" ]

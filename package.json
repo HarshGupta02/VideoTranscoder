@@ -14,11 +14,13 @@
     "@aws-sdk/client-sqs": "^3.624.0",
     "@types/aws-lambda": "^8.10.143",
     "aws-lambda": "^1.0.7",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/node": "^22.2.0",
+    "@types/uuid": "^10.0.0",
     "tsc-watch": "^6.2.0"
   }
 }

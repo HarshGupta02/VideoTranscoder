@@ -51,8 +51,9 @@ function init() {
                             continue;
                         }
                     }
-                    throw new Error("Processing Failed");
-                    // Goes to catch block that puts the message eventually to Dead Letter Queue
+                    // throw new Error("Processing Failed");
+                    // Goes to catch block that puts the message eventually to Dead Letter Queue we attached with this Source Queue
+                    // Maximum Receives = 2 so try 2 times before adding to DLQ
                     for (const record of event.Records) {
                         const { s3 } = record;
                         const { bucket, object: { key } } = s3;

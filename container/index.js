@@ -3,6 +3,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const ffmpeg = require('fluent-ffmpeg');
 const fsOld = require('fs');
+const {v4} = require('uuid');
 
 const INPUT_BUCKET_NAME = process.env.INPUT_BUCKET_NAME;
 const KEY = process.env.KEY;
@@ -37,7 +38,8 @@ async function init() {
     console.log(originalVideoPath);
 
     const promises = RESOLUTIONS.map((resolution) => {
-        const outputVideoPath = `video-transcoded-${resolution.name}.mp4`;
+        const uniqueId = v4();
+        const outputVideoPath = `${uniqueId}_${resolution.name}.mp4`;
         return new Promise((resolve) => {
             ffmpeg(originalVideoPath)
             .output(outputVideoPath)

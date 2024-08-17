@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.awsOutputBucketName = exports.awsEcsContainer = exports.awsVpcSubnet = exports.awsSecurityGroup = exports.awsClusterUrl = exports.awsTaskDefinitionUrl = exports.awsQueueUrl = exports.awsSecretAccessKey = exports.awsAccessKeyId = exports.awsRegion = void 0;
+exports.awsOutputBucketName = exports.awsInputBucketName = exports.awsEcsContainer = exports.awsVpcSubnet = exports.awsSecurityGroup = exports.awsClusterUrl = exports.awsTaskDefinitionUrl = exports.awsQueueUrl = exports.awsSecretAccessKey = exports.awsAccessKeyId = exports.awsRegion = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.awsRegion = process.env.AWS_REGION;
@@ -35,4 +35,5 @@ exports.awsClusterUrl = process.env.AWS_CLUSTER_URL;
 exports.awsSecurityGroup = process.env.AWS_SECURITY_GROUPS;
 exports.awsVpcSubnet = process.env.AWS_VPC_SUBNETS;
 exports.awsEcsContainer = process.env.AWS_ECS_CONTAINER;
+exports.awsInputBucketName = process.env.AWS_INPUT_BUCKET_NAME;
 exports.awsOutputBucketName = process.env.AWS_OUTPUT_BUCKET_NAME;

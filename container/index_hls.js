@@ -3,7 +3,6 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const ffmpeg = require('fluent-ffmpeg');
 const fsOld = require('fs');
-const {v4} = require('uuid');
 
 const INPUT_BUCKET_NAME = process.env.INPUT_BUCKET_NAME;
 const KEY = process.env.KEY;
@@ -13,10 +12,17 @@ const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const OUTPUT_BUCKET_NAME = process.env.OUTPUT_BUCKET_NAME;
 
 const RESOLUTIONS = [
-    {name: "360p", width: 480, height: 360},
-    {name: "480p", width: 858, height: 480},
-    {name: "720p", width: 1280, height: 720},  
-]; 
+    {name: "144p", width: 256, height: 144, bandwidth: 100000},
+    {name: "240p", width: 426, height: 240, bandwidth: 300000},  
+    {name: "360p", width: 480, height: 360, bandwidth: 800000},
+    {name: "480p", width: 858, height: 480, bandwidth: 1400000},
+    {name: "720p", width: 1280, height: 720, bandwidth: 2800000},
+    {name: "1080p", width: 1920, height: 1080, bandwidth: 5000000},
+    {name: "1440p", width: 2560, height: 1440, bandwidth: 8000000},
+    // {name: "2160p", width: 3840, height: 2160, bandwidth: 16000000} requires Higher compute and storage (Vertical Scaling)
+];
+
+
 
 const s3Client = new S3Client({
     region: awsRegion,
@@ -34,7 +40,9 @@ async function init() {
     const result = await s3Client.send(command);
     const originalFilePath = 'original-video.mp4';
     await fs.writeFile(originalFilePath, result.Body);
-    const originalVideoPath = path.resolve(originalFilePath); 
+    const originalVideoPath = path.resolve(originalFilePath);
+
+    const masterPlaylist = ['#EXTM3U'];
 
     const promises = RESOLUTIONS.map((resolution) => {
         const outputPath = path.resolve(`Outputs/${resolution.name}`);
@@ -75,6 +83,10 @@ async function init() {
                             }
                         });
                         await Promise.all(uploadPromises);
+
+                        masterPlaylist.push(`#EXT-X-STREAM-INF:BANDWIDTH=${resolution.bandwidth},RESOLUTION=${resolution.width}x${resolution.height}`);
+                        masterPlaylist.push(`${resolution.name}/index.m3u8`);
+
                         resolve(`${resolution.name}/index.m3u8`);
 
                     } catch (error) {
@@ -90,6 +102,16 @@ async function init() {
         });
     });
     await Promise.all(promises);
+
+    const masterPlaylistContent = masterPlaylist.join('\n');
+    const masterPlaylistCommand = new PutObjectCommand({
+        Bucket: OUTPUT_BUCKET_NAME,
+        Key: 'master.m3u8',
+        Body: masterPlaylistContent
+    });
+    await s3Client.send(masterPlaylistCommand);
+
+    console.log('Master playlist uploaded successfully.');
     console.log('All resolutions processed and uploaded successfully.');
 }
 
